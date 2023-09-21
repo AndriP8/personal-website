@@ -9,16 +9,16 @@ interface NavItemProps extends FlexProps {
 }
 const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
   return (
-    <nav style={{ marginInline: '16px' }}>
+    <nav style={{ marginInline: 16, marginBlock: 4 }}>
       <Link href={href} style={{ textDecoration: 'none' }}>
         <Flex
           align="center"
-          padding="4"
+          padding="3"
           borderRadius="lg"
           role="group"
           cursor="pointer"
           _hover={{
-            bg: 'cyan.500',
+            bg: 'gray.400',
             color: 'white',
           }}
           {...rest}

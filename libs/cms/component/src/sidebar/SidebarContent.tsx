@@ -1,4 +1,5 @@
 import { Box, BoxProps, CloseButton, Flex, Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiTrendingUp } from 'react-icons/fi';
 
@@ -20,6 +21,7 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const router = useRouter();
   return (
     <Box
       backgroundColor="white"
@@ -37,7 +39,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} href={link.href}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          href={link.href}
+          background={router.pathname === link.href ? 'gray.400' : 'white'}
+          color={router.pathname === link.href ? 'white' : 'black'}
+        >
           {link.name}
         </NavItem>
       ))}
