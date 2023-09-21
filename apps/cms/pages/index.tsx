@@ -1,10 +1,11 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
+import { Layout } from '@personal-website/cms/component';
 
 export function Index() {
   return (
-    <Box>
+    <Layout>
       <Text>Hello </Text>
-    </Box>
+    </Layout>
   );
 }
 
