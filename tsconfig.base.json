@@ -15,7 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@personal-website/cms/component": ["libs/cms/component/src/index.ts"]
+      "@personal-website/cms/component": ["libs/cms/component/src/index.ts"],
+      "@personal-website/cms/features/home": [
+        "libs/cms/features/home/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
