@@ -1,7 +1,5 @@
-import { Box, Button, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { Layout } from '@personal-website/cms/component';
-import { MdMoreHoriz } from 'react-icons/md';
-import styled from 'styled-components';
+import { Blog } from '@personal-website/cms/features/blog';
 
 const dummyData = [
   {
@@ -26,74 +24,12 @@ const dummyData = [
   },
 ];
 
-const WrapperBlogContent = styled.div`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-`;
-
-const Blog = () => {
+const BlogPage = () => {
   return (
     <Layout>
-      <Box
-        paddingBlock={6}
-        paddingInline={20}
-        borderBottom={1}
-        borderStyle="solid"
-        borderColor="gray.400"
-      >
-        <Heading>Blog</Heading>
-      </Box>
-      <Box paddingBlock={6} paddingInline={20}>
-        <SimpleGrid gap={6}>
-          {dummyData.map((data) => {
-            return (
-              <Box
-                key={data.id}
-                paddingBottom={6}
-                borderBottom={1}
-                borderStyle="solid"
-                borderColor="gray.300"
-              >
-                <Heading as="h3" fontSize={18}>
-                  {data.title}
-                </Heading>
-                <WrapperBlogContent
-                  dangerouslySetInnerHTML={{ __html: data.content }}
-                />
-                <Flex alignItems="center" gap={4} marginTop={2}>
-                  <Flex alignItems="center" gap={2} fontSize={14}>
-                    <Text>
-                      Published on <span>{data.createdAt}</span>
-                    </Text>
-                    <Box
-                      borderRadius="full"
-                      width={1}
-                      height={1}
-                      backgroundColor="black"
-                      marginBlock="auto"
-                    />
-                    <Text>{data.timeToRead / 60} min read</Text>
-                  </Flex>
-                  <Button
-                    padding={0}
-                    minWidth="auto"
-                    width="auto"
-                    height="auto"
-                    _hover={{ backgroundColor: 'none' }}
-                  >
-                    <MdMoreHoriz />
-                  </Button>
-                </Flex>
-              </Box>
-            );
-          })}
-        </SimpleGrid>
-      </Box>
+      <Blog data={dummyData} />
     </Layout>
   );
 };
 
-export default Blog;
+export default BlogPage;

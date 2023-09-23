@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@personal-website/cms/component": ["libs/cms/component/src/index.ts"],
+      "@personal-website/cms/features/blog": [
+        "libs/cms/features/blog/src/index.ts"
+      ],
       "@personal-website/cms/features/home": [
         "libs/cms/features/home/src/index.ts"
       ]

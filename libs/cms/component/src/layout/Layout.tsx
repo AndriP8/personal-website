@@ -7,7 +7,9 @@ export function Layout(props: React.PropsWithChildren) {
   return (
     <Box minHeight="100vh" backgroundColor="gray.100">
       <Sidebar />
-      <Box marginLeft={{ base: 0, md: 60 }}>{props.children}</Box>
+      <Box marginLeft={{ base: 0, md: 60 }} paddingBlock={6} paddingInline={20}>
+        {props.children}
+      </Box>
     </Box>
   );
 }
