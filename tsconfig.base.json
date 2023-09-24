@@ -21,6 +21,9 @@
       ],
       "@personal-website/cms/features/home": [
         "libs/cms/features/home/src/index.ts"
+      ],
+      "@personal-website/cms/features/new-blog": [
+        "libs/cms/features/new-blog/src/index.ts"
       ]
     }
   },
