@@ -1,12 +1,12 @@
-import { Heading } from '@chakra-ui/react';
 import { Layout } from '@personal-website/cms/component';
+import { EditBlog } from '@personal-website/cms/features/edit-blog';
 
-const EditBlog = () => {
+const EditBlogPage = () => {
   return (
     <Layout>
-      <Heading>EditBlog</Heading>
+      <EditBlog />
     </Layout>
   );
 };
 
-export default EditBlog;
+export default EditBlogPage;

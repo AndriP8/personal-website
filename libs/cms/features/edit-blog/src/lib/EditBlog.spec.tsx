@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import NewBlog from './NewBlog';
+import EditBlog from './EditBlog';
 
-describe('NewBlog', () => {
+describe('EditBlog', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<NewBlog />);
+    const { baseElement } = render(<EditBlog />);
     expect(baseElement).toBeTruthy();
   });
 });
