@@ -19,9 +19,7 @@ export function NewBlog() {
   const [title, setTitle] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [content, setContent] = React.useState('');
-  const [thumbnail, setThumbnail] = React.useState(
-    'https://res.cloudinary.com/dutqd1aca/image/upload/v1695607864/Patrick_Star_y393za.png'
-  );
+  const [thumbnail, setThumbnail] = React.useState('');
 
   const toast = useToast();
 
