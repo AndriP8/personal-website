@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "blogs" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "title" VARCHAR(100) NOT NULL,
     "slug" VARCHAR(100) NOT NULL,
     "thumbnail" VARCHAR(100) NOT NULL,
@@ -11,3 +11,4 @@ CREATE TABLE "blogs" (
 
     CONSTRAINT "blogs_pkey" PRIMARY KEY ("id")
 );
+
