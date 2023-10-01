@@ -18,6 +18,9 @@
       "@personal-website/api/shared/helper": [
         "libs/api/shared/helper/src/index.ts"
       ],
+      "@personal-website/api/shared/middleware": [
+        "libs/api/shared/middleware/src/index.ts"
+      ],
       "@personal-website/cms/component": ["libs/cms/component/src/index.ts"],
       "@personal-website/cms/features/blog": [
         "libs/cms/features/blog/src/index.ts"
