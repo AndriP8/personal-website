@@ -537,7 +537,8 @@ export default function ToolbarPlugin() {
     <div className="toolbar" ref={toolbarRef}>
       <button
         disabled={!canUndo}
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           editor.dispatchCommand(UNDO_COMMAND);
         }}
         className="toolbar-item spaced"
@@ -547,7 +548,8 @@ export default function ToolbarPlugin() {
       </button>
       <button
         disabled={!canRedo}
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           editor.dispatchCommand(REDO_COMMAND);
         }}
         className="toolbar-item"
@@ -560,9 +562,10 @@ export default function ToolbarPlugin() {
         <>
           <button
             className="toolbar-item block-controls"
-            onClick={() =>
-              setShowBlockOptionsDropDown(!showBlockOptionsDropDown)
-            }
+            onClick={(event) => {
+              event.preventDefault();
+              setShowBlockOptionsDropDown(!showBlockOptionsDropDown);
+            }}
             aria-label="Formatting Options"
           >
             <span className={'icon block-type ' + blockType} />
@@ -595,7 +598,8 @@ export default function ToolbarPlugin() {
       ) : (
         <>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
             }}
             className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
@@ -604,7 +608,8 @@ export default function ToolbarPlugin() {
             <i className="format bold" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
             }}
             className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
@@ -613,7 +618,8 @@ export default function ToolbarPlugin() {
             <i className="format italic" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
             }}
             className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
@@ -622,7 +628,8 @@ export default function ToolbarPlugin() {
             <i className="format underline" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
             }}
             className={
@@ -633,7 +640,8 @@ export default function ToolbarPlugin() {
             <i className="format strikethrough" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
             }}
             className={'toolbar-item spaced ' + (isCode ? 'active' : '')}
@@ -642,7 +650,10 @@ export default function ToolbarPlugin() {
             <i className="format code" />
           </button>
           <button
-            onClick={insertLink}
+            onClick={(event) => {
+              event.preventDefault();
+              insertLink();
+            }}
             className={'toolbar-item spaced ' + (isLink ? 'active' : '')}
             aria-label="Insert Link"
           >
@@ -652,7 +663,8 @@ export default function ToolbarPlugin() {
             createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
           <Divider />
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
             }}
             className="toolbar-item spaced"
@@ -661,7 +673,8 @@ export default function ToolbarPlugin() {
             <i className="format left-align" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
             }}
             className="toolbar-item spaced"
@@ -670,7 +683,8 @@ export default function ToolbarPlugin() {
             <i className="format center-align" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
             }}
             className="toolbar-item spaced"
@@ -679,14 +693,15 @@ export default function ToolbarPlugin() {
             <i className="format right-align" />
           </button>
           <button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify');
             }}
             className="toolbar-item"
             aria-label="Justify Align"
           >
             <i className="format justify-align" />
-          </button>{' '}
+          </button>
         </>
       )}
     </div>
