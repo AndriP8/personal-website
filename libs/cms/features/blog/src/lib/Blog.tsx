@@ -3,15 +3,16 @@ import Link from 'next/link';
 import { MdMoreHoriz } from 'react-icons/md';
 import styled from 'styled-components';
 
+export type Data = {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  createdAt: string;
+  timeToRead: number;
+};
 type BlogProps = {
-  data: {
-    id: number;
-    title: string;
-    slug: string;
-    content: string;
-    createdAt: string;
-    timeToRead: number;
-  }[];
+  data: Data[];
 };
 
 const WrapperBlogContent = styled.div`
@@ -45,7 +46,7 @@ export function Blog(props: BlogProps) {
       </Flex>
       <Box>
         <SimpleGrid gap={6}>
-          {props.data.map((data) => {
+          {props.data?.map((data) => {
             return (
               <Box
                 key={data.id}
@@ -63,7 +64,14 @@ export function Blog(props: BlogProps) {
                 <Flex alignItems="center" gap={4} marginTop={2}>
                   <Flex alignItems="center" gap={2} fontSize={14}>
                     <Text>
-                      Published on <span>{data.createdAt}</span>
+                      Published on{' '}
+                      <span>
+                        {new Intl.DateTimeFormat('id', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        }).format(new Date(data.createdAt))}
+                      </span>
                     </Text>
                     <Box
                       borderRadius="full"
@@ -72,7 +80,7 @@ export function Blog(props: BlogProps) {
                       backgroundColor="black"
                       marginBlock="auto"
                     />
-                    <Text>{data.timeToRead / 60} min read</Text>
+                    <Text>{data.timeToRead} min read</Text>
                   </Flex>
                   <Button
                     padding={0}

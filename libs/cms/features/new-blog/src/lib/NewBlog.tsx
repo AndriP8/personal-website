@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
   Flex,
@@ -20,6 +22,8 @@ export function NewBlog() {
   const [slug, setSlug] = React.useState('');
   const [content, setContent] = React.useState('');
   const [thumbnail, setThumbnail] = React.useState('');
+  const [timeToRead, setTimeToRead] = React.useState(0);
+  const [isMaximumFile, setIsMaximumFile] = React.useState(false);
 
   const toast = useToast();
 
@@ -79,12 +83,33 @@ export function NewBlog() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({
-      title,
-      slug,
-      thumbnail: parseCLoudinaryUrl(),
-      content,
-    });
+    axios
+      .post('http://localhost:3000/api/blogs', {
+        title,
+        slug: slug.toLowerCase().replace(/\s/g, '-'),
+        thumbnail: parseCLoudinaryUrl(),
+        content,
+        timeToRead,
+      })
+      .then(() =>
+        toast({
+          title: 'Create new blog successfully',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      )
+      .catch((error) =>
+        toast({
+          title: 'Create new blog error',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      );
   };
 
   return (
@@ -101,6 +126,12 @@ export function NewBlog() {
       <Box>
         <form onSubmit={handleSubmit}>
           <Flex direction="column" gap={3}>
+            {isMaximumFile ? (
+              <Alert status="warning">
+                <AlertIcon />
+                Please upload file with lower size
+              </Alert>
+            ) : null}
             <Box>
               <FormLabel fontSize={20} htmlFor="title">
                 Title
@@ -156,12 +187,19 @@ export function NewBlog() {
                   />
                 ) : null}
                 <Box height={10} position="relative">
-                  {/* TODO: handling files and size validation */}
                   <Input
                     type="file"
-                    onChange={(e) =>
-                      e.target.files ? onChangeUpload(e.target.files[0]) : null
-                    }
+                    accept=".png, .jpg, .jpeg, .webp"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        if (e.target.files[0].size > 5242880) {
+                          setIsMaximumFile(true);
+                        } else {
+                          setIsMaximumFile(false);
+                          onChangeUpload(e.target.files[0]);
+                        }
+                      }
+                    }}
                     opacity={0}
                     cursor="pointer"
                     zIndex={1}
@@ -191,6 +229,19 @@ export function NewBlog() {
                 Content
               </FormLabel>
               <Editor onChange={onChangeEditor} />
+            </Box>
+            <Box>
+              <FormLabel fontSize={20} htmlFor="slug">
+                Time To Read
+              </FormLabel>
+              <Input
+                id="time_to_read"
+                name="time_to_read"
+                type="number"
+                value={timeToRead}
+                onChange={(e) => setTimeToRead(e.target.valueAsNumber)}
+                borderColor="gray.300"
+              />
             </Box>
             <Button
               type="submit"
