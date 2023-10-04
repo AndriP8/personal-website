@@ -1,7 +1,7 @@
 import { Box, BoxProps, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { IconType } from 'react-icons';
-import { FiHome, FiSettings, FiTrendingUp } from 'react-icons/fi';
+import { MdHome, MdSettings, MdTrendingUp } from 'react-icons/md';
 
 import NavItem from './SidebarItem';
 
@@ -15,9 +15,9 @@ interface SidebarProps extends BoxProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome, href: '/' },
-  { name: 'Blog', icon: FiTrendingUp, href: '/blog' },
-  { name: 'Project', icon: FiSettings, href: '/project' },
+  { name: 'Home', icon: MdHome, href: '/' },
+  { name: 'Blog', icon: MdTrendingUp, href: '/blog' },
+  { name: 'Project', icon: MdSettings, href: '/project' },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {

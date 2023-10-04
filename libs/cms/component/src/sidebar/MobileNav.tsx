@@ -1,5 +1,5 @@
 import { Flex, FlexProps, IconButton, Text } from '@chakra-ui/react';
-import { FiMenu } from 'react-icons/fi';
+import { MdMenu } from 'react-icons/md';
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
@@ -21,7 +21,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         variant="outline"
         onClick={onOpen}
         aria-label="open menu"
-        icon={<FiMenu />}
+        icon={<MdMenu />}
       />
 
       <Text
