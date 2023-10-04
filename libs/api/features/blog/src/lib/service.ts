@@ -41,7 +41,14 @@ const createBlogService = async (req: Request) => {
   });
 };
 
-const getBlogService = () => {
+const getBlogService = (req: Request) => {
+  if (req.query.id) {
+    return prismaClient.blog.findFirst({
+      where: {
+        id: req.query.id as string,
+      },
+    });
+  }
   // TODO: implement pagination
   return prismaClient.blog.findMany({
     orderBy: {

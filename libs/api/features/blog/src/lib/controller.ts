@@ -27,7 +27,7 @@ const getBlogController = async (
   next: NextFunction
 ) => {
   try {
-    const result = await getBlogService();
+    const result = await getBlogService(req);
     res.status(200).json({ data: result });
   } catch (e) {
     next(e);
