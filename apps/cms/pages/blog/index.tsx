@@ -1,10 +1,11 @@
 import { Layout } from '@personal-website/cms/component';
-import { Blog, Data } from '@personal-website/cms/features/blog';
+import { Blog } from '@personal-website/cms/features/blog';
+import { Blog as BlogType } from '@prisma/client';
 import axios from 'axios';
 import React from 'react';
 
 const BlogPage = () => {
-  const [blogData, setBlogData] = React.useState<Data[] | []>([]);
+  const [blogData, setBlogData] = React.useState<BlogType[] | []>([]);
 
   React.useEffect(() => {
     axios

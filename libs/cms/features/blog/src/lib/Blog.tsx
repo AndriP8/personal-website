@@ -1,18 +1,18 @@
-import { Box, Button, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Text,
+} from '@chakra-ui/react';
+import { Blog } from '@prisma/client';
 import Link from 'next/link';
-import { MdMoreHoriz } from 'react-icons/md';
 import styled from 'styled-components';
 
-export type Data = {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  createdAt: string;
-  timeToRead: number;
-};
 type BlogProps = {
-  data: Data[];
+  data: Blog[];
 };
 
 const WrapperBlogContent = styled.div`
@@ -82,14 +82,17 @@ export function Blog(props: BlogProps) {
                     />
                     <Text>{data.timeToRead} min read</Text>
                   </Flex>
+                  <Divider
+                    height={4}
+                    borderColor="gray.700"
+                    orientation="vertical"
+                  />
                   <Button
                     padding={0}
-                    minWidth="auto"
-                    width="auto"
-                    height="auto"
-                    _hover={{ backgroundColor: 'none' }}
+                    fontSize={14}
+                    _hover={{ backgroundColor: 'transparent' }}
                   >
-                    <MdMoreHoriz />
+                    <Link href={`blog/${data.id}`}>Edit</Link>
                   </Button>
                 </Flex>
               </Box>

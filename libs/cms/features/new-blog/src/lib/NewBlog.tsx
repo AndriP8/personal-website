@@ -12,10 +12,12 @@ import {
 } from '@chakra-ui/react';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import { Editor } from '@personal-website/cms/component';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { EditorState, LexicalEditor } from 'lexical';
 import Image from 'next/image';
 import React from 'react';
+
+const maxSizeThumbnail = 5242880;
 
 export function NewBlog() {
   const [title, setTitle] = React.useState('');
@@ -69,6 +71,7 @@ export function NewBlog() {
       });
   };
 
+  // TODO: Move to shared libs
   const parseCLoudinaryUrl = () => {
     let splittedUrl = '';
     const url = thumbnail;
@@ -100,16 +103,18 @@ export function NewBlog() {
           position: 'top-right',
         })
       )
-      .catch((error) =>
-        toast({
-          title: 'Create new blog error',
-          description: error.message,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top-right',
-        })
-      );
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError) {
+          toast({
+            title: 'Create new blog error',
+            description: error.response?.data.errors,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right',
+          });
+        }
+      });
   };
 
   return (
@@ -192,7 +197,7 @@ export function NewBlog() {
                     accept=".png, .jpg, .jpeg, .webp"
                     onChange={(e) => {
                       if (e.target.files) {
-                        if (e.target.files[0].size > 5242880) {
+                        if (e.target.files[0].size > maxSizeThumbnail) {
                           setIsMaximumFile(true);
                         } else {
                           setIsMaximumFile(false);
