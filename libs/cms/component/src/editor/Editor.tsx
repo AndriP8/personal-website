@@ -52,8 +52,8 @@ const editorConfig = {
 
 type EditorProps = {
   onChange: (_editorState: EditorState, editor: LexicalEditor) => void;
+  initialValue?: string;
 };
-
 export const Editor = (props: EditorProps) => {
   return (
     <LexicalComposer initialConfig={editorConfig}>
@@ -65,7 +65,7 @@ export const Editor = (props: EditorProps) => {
             placeholder={<Placeholder />}
             ErrorBoundary={LexicalErrorBoundary}
           />
-          <LoadInitialContent initialContent="" />
+          <LoadInitialContent initialContent={props.initialValue} />
           <HistoryPlugin />
           <AutoFocusPlugin />
           <CodeHighlightPlugin />

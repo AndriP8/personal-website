@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
   Flex,
@@ -10,18 +12,29 @@ import {
 } from '@chakra-ui/react';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import { Editor } from '@personal-website/cms/component';
-import axios from 'axios';
+import { Blog } from '@prisma/client';
+import axios, { AxiosError } from 'axios';
 import { EditorState, LexicalEditor } from 'lexical';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import React from 'react';
 
-export function EditBlog() {
+type EditBlogProps = {
+  data: Blog;
+};
+
+const maxSizeThumbnail = 5242880;
+
+export function EditBlog({ data }: EditBlogProps) {
   const [title, setTitle] = React.useState('');
   const [slug, setSlug] = React.useState('');
-  const [content, setContent] = React.useState('');
   const [thumbnail, setThumbnail] = React.useState('');
+  const [content, setContent] = React.useState('');
+  const [timeToRead, setTimeToRead] = React.useState(0);
+  const [isMaximumFile, setIsMaximumFile] = React.useState(false);
 
   const toast = useToast();
+  const router = useRouter();
 
   const onChangeEditor = (_editorState: EditorState, editor: LexicalEditor) => {
     editor.update(() => {
@@ -65,14 +78,63 @@ export function EditBlog() {
       });
   };
 
+  React.useEffect(() => {
+    if (data !== null) {
+      setTitle(data.title);
+      setSlug(data.slug);
+      setThumbnail(
+        `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload${data.thumbnail}`
+      );
+      setTimeToRead(data.timeToRead);
+    }
+  }, [data]);
+
+  // TODO: Move to shared libs
+  const parseCLoudinaryUrl = () => {
+    let splittedUrl = '';
+    const url = thumbnail;
+    const splitUrl = url.split('/');
+    for (let i = 0; i < splitUrl.length; i++) {
+      if (i > 5) {
+        splittedUrl += `/${splitUrl[i]}`;
+      }
+    }
+    return splittedUrl;
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({
-      title,
-      slug,
-      content,
-    });
+    axios
+      .put(`http://localhost:3000/api/blogs/${router.query.id}`, {
+        title,
+        slug: slug.toLowerCase().replace(/\s/g, '-'),
+        thumbnail: parseCLoudinaryUrl(),
+        content,
+        timeToRead,
+      })
+      .then(() =>
+        toast({
+          title: 'Create new blog successfully',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      )
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError) {
+          toast({
+            title: 'Create new blog error',
+            description: error.response?.data.errors,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right',
+          });
+        }
+      });
   };
+
   return (
     <>
       <Box
@@ -87,6 +149,12 @@ export function EditBlog() {
       <Box>
         <form onSubmit={handleSubmit}>
           <Flex direction="column" gap={3}>
+            {isMaximumFile ? (
+              <Alert status="warning">
+                <AlertIcon />
+                Please upload file with lower size
+              </Alert>
+            ) : null}
             <Box>
               <FormLabel fontSize={20} htmlFor="title">
                 Title
@@ -142,12 +210,19 @@ export function EditBlog() {
                   />
                 ) : null}
                 <Box height={10} position="relative">
-                  {/* TODO: handling files and size validation */}
                   <Input
                     type="file"
-                    onChange={(e) =>
-                      e.target.files ? onChangeUpload(e.target.files[0]) : null
-                    }
+                    accept=".png, .jpg, .jpeg, .webp"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        if (e.target.files[0].size > maxSizeThumbnail) {
+                          setIsMaximumFile(true);
+                        } else {
+                          setIsMaximumFile(false);
+                          onChangeUpload(e.target.files[0]);
+                        }
+                      }
+                    }}
                     opacity={0}
                     cursor="pointer"
                     zIndex={1}
@@ -176,7 +251,20 @@ export function EditBlog() {
               <FormLabel fontSize={20} htmlFor="slug">
                 Content
               </FormLabel>
-              <Editor onChange={onChangeEditor} />
+              <Editor onChange={onChangeEditor} initialValue={data?.content} />
+            </Box>
+            <Box>
+              <FormLabel fontSize={20} htmlFor="slug">
+                Time To Read
+              </FormLabel>
+              <Input
+                id="time_to_read"
+                name="time_to_read"
+                type="number"
+                value={timeToRead}
+                onChange={(e) => setTimeToRead(e.target.valueAsNumber)}
+                borderColor="gray.300"
+              />
             </Box>
             <Button
               type="submit"
