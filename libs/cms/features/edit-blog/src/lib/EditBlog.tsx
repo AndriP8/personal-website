@@ -114,7 +114,7 @@ export function EditBlog({ data }: EditBlogProps) {
       })
       .then(() =>
         toast({
-          title: 'Create new blog successfully',
+          title: 'Edit blog successfully',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -124,7 +124,7 @@ export function EditBlog({ data }: EditBlogProps) {
       .catch((error: unknown) => {
         if (error instanceof AxiosError) {
           toast({
-            title: 'Create new blog error',
+            title: 'Edit blog error',
             description: error.response?.data.errors,
             status: 'error',
             duration: 3000,

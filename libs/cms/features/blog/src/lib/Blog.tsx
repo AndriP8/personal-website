@@ -4,11 +4,22 @@ import {
   Divider,
   Flex,
   Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   SimpleGrid,
   Text,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { Blog } from '@prisma/client';
+import axios, { AxiosError } from 'axios';
 import Link from 'next/link';
+import React from 'react';
 import styled from 'styled-components';
 
 type BlogProps = {
@@ -24,6 +35,42 @@ const WrapperBlogContent = styled.div`
 `;
 
 export function Blog(props: BlogProps) {
+  const [clickedDeletedData, setClickedDeletedData] =
+    React.useState<Blog | null>(null);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+
+  const handleDelete = () => {
+    axios
+      .delete(`http://localhost:3000/api/blogs/${clickedDeletedData?.id}`, {
+        data: {
+          id: clickedDeletedData?.id,
+        },
+      })
+      .then(() =>
+        toast({
+          title: 'Edit blog successfully',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      )
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError) {
+          toast({
+            title: 'Edit blog error',
+            description: error.response?.data.errors,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right',
+          });
+        }
+      })
+      .finally(onClose);
+  };
   return (
     <>
       <Flex
@@ -61,7 +108,7 @@ export function Blog(props: BlogProps) {
                 <WrapperBlogContent
                   dangerouslySetInnerHTML={{ __html: data.content }}
                 />
-                <Flex alignItems="center" gap={4} marginTop={2}>
+                <Flex alignItems="center" gap={2} marginTop={2}>
                   <Flex alignItems="center" gap={2} fontSize={14}>
                     <Text>
                       Published on{' '}
@@ -94,6 +141,50 @@ export function Blog(props: BlogProps) {
                   >
                     <Link href={`blog/${data.id}`}>Edit</Link>
                   </Button>
+                  <Button
+                    padding={0}
+                    fontSize={14}
+                    color="red.500"
+                    _hover={{ backgroundColor: 'transparent' }}
+                    onClick={() => {
+                      onOpen();
+                      setClickedDeletedData(data);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                  <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Delete Blog</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <Text>
+                          Are you sure to delete: {clickedDeletedData?.title}
+                        </Text>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Flex gap={2}>
+                          <Button
+                            backgroundColor="gray.400"
+                            color="white"
+                            _hover={{ backgroundColor: 'gray.500' }}
+                            onClick={onClose}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            backgroundColor="red.500"
+                            color="white"
+                            _hover={{ backgroundColor: 'red.600' }}
+                            onClick={handleDelete}
+                          >
+                            Delete
+                          </Button>
+                        </Flex>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
                 </Flex>
               </Box>
             );
