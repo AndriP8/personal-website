@@ -42,10 +42,10 @@ const createBlogService = async (req: Request) => {
 };
 
 const getBlogService = (req: Request) => {
-  if (req.query.id) {
+  if (req.query.blogId) {
     return prismaClient.blog.findFirst({
       where: {
-        id: req.query.id as string,
+        id: req.query.blogId as string,
       },
     });
   }

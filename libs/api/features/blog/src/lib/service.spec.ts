@@ -71,6 +71,16 @@ describe('GET /api/blogs', () => {
     expect(result.status).toBe(200);
     expect(result.body.data).toHaveLength(result.body.data.length);
   });
+
+  it('should can get blog data by id', async () => {
+    const testBlog = await getTestBlog();
+    const result = await supertest(app).get(
+      `/api/blogs?blogId=${testBlog?.id}`
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.id).toBe(testBlog?.id);
+  });
 });
 
 describe('PUT /api/blogs/:blogId', () => {
