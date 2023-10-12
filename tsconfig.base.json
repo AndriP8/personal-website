@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@api-app/*": ["apps/api/*"],
+      "@personal-website/api/features/auth": [
+        "libs/api/features/auth/src/index.ts"
+      ],
       "@personal-website/api/features/blog": [
         "libs/api/features/blog/src/index.ts"
       ],

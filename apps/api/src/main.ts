@@ -1,5 +1,9 @@
+import { userRoute } from '@personal-website/api/features/auth';
 import { blogRouter } from '@personal-website/api/features/blog';
-import { error as errorMiddleware } from '@personal-website/api/shared/middleware';
+import {
+  error as errorMiddleware,
+  protectRoute,
+} from '@personal-website/api/shared/middleware';
 import cors from 'cors';
 import express from 'express';
 
@@ -14,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // TODO: update origin based on domain cms and personal website soon
 app.use(cors());
+
+app.use(userRoute);
+app.use(protectRoute);
 
 app.use(blogRouter);
 
