@@ -1,4 +1,8 @@
-import {  removeTestUser } from '@personal-website/api/shared/helper';
+import {
+  createTestUser,
+  logger,
+  removeTestUser,
+} from '@personal-website/api/shared/helper';
 import { error as errorMiddleware } from '@personal-website/api/shared/middleware';
 import express from 'express';
 import supertest from 'supertest';
@@ -68,5 +72,41 @@ describe('POST /api/users', () => {
     expect(result.body.errors).toBe(
       "\"email\" is not allowed to be empty. \"password\" is not allowed to be empty"
     );
+  });
+});
+
+describe('POST /api/users/login', () => {
+  beforeEach(() => {
+    createTestUser();
+  });
+  afterEach(() => {
+    removeTestUser();
+  });
+
+  it('should can login with existing user', async () => {
+    const result = await supertest(app)
+      .post('/api/users/login')
+      .set('Content-Type', 'application/json')
+      .send({
+        email: 'test@gmail.com',
+        password: 'test123',
+      });
+
+    logger.info(result);
+    expect(result.status).toBe(200);
+    expect(result.body.token).toBeDefined();
+  });
+  it('should reject if email and password is invalid', async () => {
+    const result = await supertest(app)
+      .post('/api/users/login')
+      .set('Content-Type', 'application/json')
+      .send({
+        email: 'testwrong@gmail.com',
+        password: 'testwrong',
+      });
+
+    logger.info(result);
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBe('Username or Password is invalid');
   });
 });

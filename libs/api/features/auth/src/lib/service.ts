@@ -4,17 +4,17 @@ import {
   validate,
 } from '@personal-website/api/shared/helper';
 // Using bscrypt when issue https://github.com/kelektiv/node.bcrypt.js/issues/964 resolved
-import { hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { Request, Response } from 'express';
 
 import { createJWT } from './jwt';
-import { createUserValidation } from './validation';
+import { userValidation } from './validation';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const minPassword = 6;
 
-export const createNewUser = async (req: Request, res: Response) => {
-  const data = validate(createUserValidation, req);
+export const createUserService = async (req: Request, res: Response) => {
+  const data = validate(userValidation, req);
   const countUser = await prismaClient.user.count({
     where: {
       email: data.email,
@@ -39,5 +39,26 @@ export const createNewUser = async (req: Request, res: Response) => {
 
     const token = createJWT(user);
     return res.json({ token: token });
+  }
+};
+
+export const loginUserService = async (req: Request, res: Response) => {
+  const data = validate(userValidation, req);
+
+  const user = await prismaClient.user.findUnique({
+    where: {
+      email: data.email,
+    },
+  });
+
+  const isPasswordValid = user?.password
+    ? await compare(data.password, user.password)
+    : false;
+
+  if (!isPasswordValid) {
+    throw new ResponseError(400, 'Username or Password is invalid');
+  } else {
+    const token = createJWT(data);
+    res.json({ token });
   }
 };
