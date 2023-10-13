@@ -40,12 +40,6 @@ describe('POST /api/blogs', () => {
     expect(result.body.data.thumbnail).toBe('test thumbnail');
     expect(result.body.data.content).toBe('<p>test content</p>');
     expect(result.body.data.timeToRead).toBe(4);
-
-    // await prismaClient.blog.delete({
-    //   where: {
-    //     id: result.body.data.id,
-    //   },
-    // });
   });
 
   it('should reject if request is invalid', async () => {
