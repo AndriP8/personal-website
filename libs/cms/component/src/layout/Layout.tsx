@@ -5,7 +5,7 @@ import Sidebar from '../sidebar/Sidebar';
 
 export function Layout(props: React.PropsWithChildren) {
   return (
-    <Box minHeight="100vh" backgroundColor="gray.100">
+    <Box minHeight="100vh" height="full" backgroundColor="gray.100">
       <Sidebar />
       <Box
         marginLeft={{ base: 0, md: 60 }}
