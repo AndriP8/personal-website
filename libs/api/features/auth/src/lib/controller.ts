@@ -9,7 +9,9 @@ export const createUserController = async (
 ) => {
   try {
     const request = req.body;
-    await createUserService(request, res);
+    const result = await createUserService(request);
+    const { password, ...results } = result;
+    res.status(200).json({ data: results });
   } catch (e) {
     next(e);
   }

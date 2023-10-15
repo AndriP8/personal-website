@@ -32,7 +32,7 @@ describe('POST /api/users', () => {
       });
 
     expect(result.status).toBe(200);
-    expect(result.body.token).toBeDefined();
+    expect(result.body).not.toHaveProperty('password');
   });
 
   it('should reject if email is invalid', async () => {
@@ -70,7 +70,7 @@ describe('POST /api/users', () => {
 
     expect(result.status).toBe(400);
     expect(result.body.errors).toBe(
-      "\"email\" is not allowed to be empty. \"password\" is not allowed to be empty"
+      '"email" is not allowed to be empty. "password" is not allowed to be empty'
     );
   });
 });

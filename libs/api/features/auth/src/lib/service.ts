@@ -13,7 +13,7 @@ import { userValidation } from './validation';
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const minPassword = 6;
 
-export const createUserService = async (req: Request, res: Response) => {
+export const createUserService = async (req: Request) => {
   const data = validate(userValidation, req);
   const countUser = await prismaClient.user.count({
     where: {
@@ -30,15 +30,12 @@ export const createUserService = async (req: Request, res: Response) => {
   } else if (data.password.length < minPassword) {
     throw new ResponseError(400, 'Password must contain min 6 character');
   } else {
-    const user = await prismaClient.user.create({
+    return prismaClient.user.create({
       data: {
         email: data.email,
         password: await hash(data.password, 5),
       },
     });
-
-    const token = createJWT(user);
-    return res.json({ token: token });
   }
 };
 
