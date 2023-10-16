@@ -40,6 +40,12 @@
       ],
       "@personal-website/cms/features/new-blog": [
         "libs/cms/features/new-blog/src/index.ts"
+      ],
+      "@personal-website/shared/data-access": [
+        "libs/shared/data-access/src/index.ts"
+      ],
+      "@personal-website/shared/token-context": [
+        "libs/shared/token-context/index.ts"
       ]
     }
   },

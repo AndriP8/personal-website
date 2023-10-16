@@ -11,6 +11,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { PasswordField } from '@personal-website/cms/component';
+import { TokenContext } from '@personal-website/shared/token-context';
 import axios, { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -26,6 +27,8 @@ const SignIn = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
+  const { setToken } = React.useContext(TokenContext);
+
   const toast = useToast();
   const router = useRouter();
 
@@ -38,6 +41,7 @@ const SignIn = () => {
       })
       .then((res) => {
         localStorage.setItem('token', res.data.token);
+        setToken(res.data.token);
         toast({
           title: 'Sign in successfully',
           status: 'success',
