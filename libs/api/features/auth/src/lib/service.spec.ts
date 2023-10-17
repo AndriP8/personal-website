@@ -1,6 +1,5 @@
 import {
   createTestUser,
-  logger,
   removeTestUser,
 } from '@personal-website/api/shared/helper';
 import { error as errorMiddleware } from '@personal-website/api/shared/middleware';
@@ -18,8 +17,11 @@ app.use(userRoute);
 app.use(errorMiddleware);
 
 describe('POST /api/users', () => {
-  afterEach(() => {
-    removeTestUser();
+  afterEach(async () => {
+    await removeTestUser();
+  });
+  afterAll(async () => {
+    await removeTestUser();
   });
 
   it('should can create new user', async () => {
@@ -76,14 +78,8 @@ describe('POST /api/users', () => {
 });
 
 describe('POST /api/users/login', () => {
-  beforeEach(() => {
-    createTestUser();
-  });
-  afterEach(() => {
-    removeTestUser();
-  });
-
   it('should can login with existing user', async () => {
+    await createTestUser();
     const result = await supertest(app)
       .post('/api/users/login')
       .set('Content-Type', 'application/json')
@@ -92,9 +88,9 @@ describe('POST /api/users/login', () => {
         password: 'test123',
       });
 
-    logger.info(result);
     expect(result.status).toBe(200);
     expect(result.body.token).toBeDefined();
+    await removeTestUser();
   });
   it('should reject if email and password is invalid', async () => {
     const result = await supertest(app)
@@ -105,7 +101,6 @@ describe('POST /api/users/login', () => {
         password: 'testwrong',
       });
 
-    logger.info(result);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBe('Username or Password is invalid');
   });

@@ -7,8 +7,13 @@ type User = {
 
 export const createJWT = (user: User) => {
   const token = jwt.sign(
-    { id: user.id, username: user.email },
+    { id: user.id, email: user.email },
     process.env.JWT_SECRET ?? ''
   );
   return token;
+};
+
+export const decodeToken = (token: string) => {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '');
+  return decoded as User;
 };
