@@ -19,6 +19,8 @@ model Blog {
   timeToRead Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  author     User?    @relation(fields: [authorId], references: [id])
+  authorId   String
 
   @@map("blogs")
 }
@@ -29,4 +31,5 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Blogs     Blog[]
 }

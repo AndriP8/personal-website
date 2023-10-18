@@ -17,3 +17,8 @@ export const decodeToken = (token: string) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '');
   return decoded as User;
 };
+
+export const splitBearer = (bearer: string) => {
+  const [, token] = bearer.split(' ');
+  return token;
+};

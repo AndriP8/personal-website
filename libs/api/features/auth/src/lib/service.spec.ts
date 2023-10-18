@@ -17,9 +17,6 @@ app.use(userRoute);
 app.use(errorMiddleware);
 
 describe('POST /api/users', () => {
-  afterEach(async () => {
-    await removeTestUser();
-  });
   afterAll(async () => {
     await removeTestUser();
   });
@@ -54,7 +51,7 @@ describe('POST /api/users', () => {
       .post('/api/users')
       .set('Content-Type', 'application/json')
       .send({
-        email: 'test@gmail.com',
+        email: 'testInvalidPassword@gmail.com',
         password: 'test',
       });
 

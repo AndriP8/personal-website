@@ -2,7 +2,9 @@
   "name": "personal-website",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test:affected": "nx affected  --target=test"
+  },
   "private": true,
   "dependencies": {
     "@chakra-ui/next-js": "^2.1.5",

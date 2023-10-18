@@ -15,8 +15,16 @@ export const createTestUser = async () => {
   });
 };
 
+const getTestUser = () => {
+  return prismaClient.user.findUnique({
+    where: {
+      email: 'test@gmail.com',
+    },
+  });
+};
+
 export const removeTestUser = () => {
-  return prismaClient.user.deleteMany({
+  return prismaClient.user.delete({
     where: {
       email: 'test@gmail.com',
     },
@@ -31,4 +39,43 @@ export const loginTestUser = (app: Express) => {
       email: 'test@gmail.com',
       password: 'test123',
     });
+};
+
+export const createTesBlog = (authorId: string) => {
+  return prismaClient.blog.create({
+    data: {
+      title: 'test title',
+      slug: 'test slug',
+      thumbnail: 'test thumbnail',
+      content: '<p>test content</p>',
+      timeToRead: 4,
+      authorId,
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      thumbnail: true,
+      content: true,
+      timeToRead: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+};
+
+export const getTestBlog = () => {
+  return prismaClient.blog.findFirst({
+    where: {
+      title: 'test title',
+    },
+  });
+};
+
+export const removeTestBlog = () => {
+  return prismaClient.blog.delete({
+    where: {
+      title: 'test title',
+    },
+  });
 };

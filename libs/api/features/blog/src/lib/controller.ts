@@ -1,3 +1,4 @@
+import { splitBearer } from '@personal-website/api/shared/helper';
 import { NextFunction, Request, Response } from 'express';
 
 import {
@@ -13,8 +14,9 @@ const createBlogController = async (
   next: NextFunction
 ) => {
   try {
-    const request = req.body;
-    const result = await createBlogService(request);
+    const { user, ...request } = req.body;
+    const token = splitBearer(req.headers.authorization ?? '');
+    const result = token ? await createBlogService(request, token) : null;
     res.status(200).json({ data: result });
   } catch (e) {
     next(e);
@@ -40,7 +42,7 @@ const updateBlogController = async (
   next: NextFunction
 ) => {
   try {
-    const request = req.body;
+    const { user, ...request } = req.body;
     req.body.id = req.params.blogId;
     const result = await updateBlogService(request);
     res.status(200).json({ data: result });
@@ -55,7 +57,7 @@ const deleteBlogController = async (
   next: NextFunction
 ) => {
   try {
-    const request = req.body;
+    const { user, ...request } = req.body;
     req.body.id = req.params.blogId;
     const result = await deleteBlogService(request);
     res.status(200).json({ data: result });

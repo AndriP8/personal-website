@@ -1,4 +1,5 @@
 import {
+  decodeToken,
   prismaClient,
   ResponseError,
   validate,
@@ -11,8 +12,9 @@ import {
   updateBlogValidation,
 } from './validation';
 
-const createBlogService = async (req: Request) => {
+const createBlogService = async (req: Request, token: string) => {
   const data = validate(createBlogValidation, req);
+  const payloadToken = decodeToken(token);
   const countBlog = await prismaClient.blog.count({
     where: {
       title: data.title,
@@ -27,7 +29,10 @@ const createBlogService = async (req: Request) => {
   }
 
   return prismaClient.blog.create({
-    data,
+    data: {
+      ...data,
+      authorId: payloadToken.id,
+    },
     select: {
       id: true,
       title: true,
@@ -54,6 +59,16 @@ const getBlogService = (req: Request) => {
     orderBy: {
       title: 'asc',
     },
+    select: {
+      id: true,
+      title: true,
+      thumbnail: true,
+      content: true,
+      timeToRead: true,
+      createdAt: true,
+      updatedAt: true,
+      slug: true,
+    },
   });
 };
 
@@ -71,6 +86,16 @@ const updateBlogService = async (req: Request) => {
         id: data.id,
       },
       data,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        thumbnail: true,
+        content: true,
+        timeToRead: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   } else {
     throw new ResponseError(400, 'Blog is not found');

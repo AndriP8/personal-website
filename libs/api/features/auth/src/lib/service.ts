@@ -3,11 +3,11 @@ import {
   ResponseError,
   validate,
 } from '@personal-website/api/shared/helper';
+import { createJWT } from '@personal-website/api/shared/helper';
 // Using bscrypt when issue https://github.com/kelektiv/node.bcrypt.js/issues/964 resolved
 import { compare, hash } from 'bcryptjs';
 import { Request, Response } from 'express';
 
-import { createJWT } from './jwt';
 import { userValidation } from './validation';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
