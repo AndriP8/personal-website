@@ -6,13 +6,16 @@ import {
   Flex,
   FormLabel,
   Heading,
+  HStack,
   Input,
+  Spinner,
   Text,
   useToast,
 } from '@chakra-ui/react';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import { Editor } from '@personal-website/cms/component';
-import axios, { AxiosError } from 'axios';
+import { axios, AxiosError } from '@personal-website/shared/data-access';
+import { TokenContext } from '@personal-website/shared/token-context';
 import { EditorState, LexicalEditor } from 'lexical';
 import Image from 'next/image';
 import React from 'react';
@@ -26,8 +29,10 @@ export function NewBlog() {
   const [thumbnail, setThumbnail] = React.useState('');
   const [timeToRead, setTimeToRead] = React.useState(0);
   const [isMaximumFile, setIsMaximumFile] = React.useState(false);
+  const [isUploadImageLoading, setIsUploadImageLoading] = React.useState(false);
 
   const toast = useToast();
+  const { token } = React.useContext(TokenContext);
 
   const onChangeEditor = (_editorState: EditorState, editor: LexicalEditor) => {
     editor.update(() => {
@@ -44,13 +49,15 @@ export function NewBlog() {
       process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''
     );
 
-    axios
+    setIsUploadImageLoading(true);
+    axios({ externalUrl: 'https://api.cloudinary.com/v1_1' })
       .post(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
         formData
       )
       .then((response) => {
         setThumbnail(response.data.url);
+        setIsUploadImageLoading(false);
         toast({
           title: 'Upload image has been successfully',
           status: 'success',
@@ -60,6 +67,7 @@ export function NewBlog() {
         });
       })
       .catch((error) => {
+        setIsUploadImageLoading(false);
         toast({
           title: 'Upload image has an error',
           description: error.message,
@@ -86,8 +94,8 @@ export function NewBlog() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios
-      .post('http://localhost:3000/api/blogs', {
+    axios({ token })
+      .post('/backoffice/blogs', {
         title,
         slug: slug.toLowerCase().replace(/\s/g, '-'),
         thumbnail: parseCLoudinaryUrl(),
@@ -221,12 +229,17 @@ export function NewBlog() {
                     Choose image
                   </Button>
                 </Box>
-                <Text color="gray.600" fontSize={14}>
-                  Allowed file extensions: .JPG .JPEG .PNG
-                </Text>
-                <Text color="gray.600" fontSize={14}>
-                  Maximum file is 5Mb
-                </Text>
+                <HStack justifyContent="space-between">
+                  <Box>
+                    <Text color="gray.600" fontSize={14}>
+                      Allowed file extensions: .JPG .JPEG .PNG
+                    </Text>
+                    <Text color="gray.600" fontSize={14}>
+                      Maximum file is 5Mb
+                    </Text>
+                  </Box>
+                  {isUploadImageLoading && <Spinner />}
+                </HStack>
               </Box>
             </Box>
             <Box>

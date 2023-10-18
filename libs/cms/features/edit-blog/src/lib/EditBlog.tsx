@@ -3,17 +3,21 @@ import {
   AlertIcon,
   Box,
   Button,
+  Center,
   Flex,
   FormLabel,
   Heading,
+  HStack,
   Input,
+  Spinner,
   Text,
   useToast,
 } from '@chakra-ui/react';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import { Editor } from '@personal-website/cms/component';
+import { axios, AxiosError } from '@personal-website/shared/data-access';
+import { TokenContext } from '@personal-website/shared/token-context';
 import { Blog } from '@prisma/client';
-import axios, { AxiosError } from 'axios';
 import { EditorState, LexicalEditor } from 'lexical';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -21,20 +25,23 @@ import React from 'react';
 
 type EditBlogProps = {
   data: Blog;
+  errorMessage: string;
 };
 
 const maxSizeThumbnail = 5242880;
 
-export function EditBlog({ data }: EditBlogProps) {
+export function EditBlog(props: EditBlogProps) {
   const [title, setTitle] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [thumbnail, setThumbnail] = React.useState('');
   const [content, setContent] = React.useState('');
   const [timeToRead, setTimeToRead] = React.useState(0);
   const [isMaximumFile, setIsMaximumFile] = React.useState(false);
+  const [isUploadImageLoading, setIsUploadImageLoading] = React.useState(false);
 
   const toast = useToast();
   const router = useRouter();
+  const { token } = React.useContext(TokenContext);
 
   const onChangeEditor = (_editorState: EditorState, editor: LexicalEditor) => {
     editor.update(() => {
@@ -51,13 +58,15 @@ export function EditBlog({ data }: EditBlogProps) {
       process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''
     );
 
-    axios
+    setIsUploadImageLoading(true);
+    axios({ externalUrl: 'https://api.cloudinary.com/v1_1' })
       .post(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
         formData
       )
       .then((response) => {
         setThumbnail(response.data.url);
+        setIsUploadImageLoading(false);
         toast({
           title: 'Upload image has been successfully',
           status: 'success',
@@ -67,6 +76,7 @@ export function EditBlog({ data }: EditBlogProps) {
         });
       })
       .catch((error) => {
+        setIsUploadImageLoading(false);
         toast({
           title: 'Upload image has an error',
           description: error.message,
@@ -77,17 +87,16 @@ export function EditBlog({ data }: EditBlogProps) {
         });
       });
   };
-
   React.useEffect(() => {
-    if (data !== null) {
-      setTitle(data.title);
-      setSlug(data.slug);
+    if (props.data !== null) {
+      setTitle(props.data.title);
+      setSlug(props.data.slug);
       setThumbnail(
-        `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload${data.thumbnail}`
+        `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload${props.data.thumbnail}`
       );
-      setTimeToRead(data.timeToRead);
+      setTimeToRead(props.data.timeToRead);
     }
-  }, [data]);
+  }, [props.data]);
 
   // TODO: Move to shared libs
   const parseCLoudinaryUrl = () => {
@@ -104,8 +113,9 @@ export function EditBlog({ data }: EditBlogProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios
-      .put(`http://localhost:3000/api/blogs/${router.query.id}`, {
+    axios({ token })
+      .put(`/backoffice/blogs/${router.query.id}`, {
+        id: router.query.id,
         title,
         slug: slug.toLowerCase().replace(/\s/g, '-'),
         thumbnail: parseCLoudinaryUrl(),
@@ -135,8 +145,12 @@ export function EditBlog({ data }: EditBlogProps) {
       });
   };
 
-  return (
-    <>
+  return props.errorMessage ? (
+    <Center marginTop={28}>
+      <Heading>{props.errorMessage}</Heading>
+    </Center>
+  ) : (
+    <Box>
       <Box
         borderBottom={1}
         borderStyle="solid"
@@ -239,19 +253,27 @@ export function EditBlog({ data }: EditBlogProps) {
                     Choose image
                   </Button>
                 </Box>
-                <Text color="gray.600" fontSize={14}>
-                  Allowed file extensions: .JPG .JPEG .PNG
-                </Text>
-                <Text color="gray.600" fontSize={14}>
-                  Maximum file is 5Mb
-                </Text>
+                <HStack justifyContent="space-between">
+                  <Box>
+                    <Text color="gray.600" fontSize={14}>
+                      Allowed file extensions: .JPG .JPEG .PNG
+                    </Text>
+                    <Text color="gray.600" fontSize={14}>
+                      Maximum file is 5Mb
+                    </Text>
+                  </Box>
+                  {isUploadImageLoading && <Spinner />}
+                </HStack>
               </Box>
             </Box>
             <Box>
               <FormLabel fontSize={20} htmlFor="slug">
                 Content
               </FormLabel>
-              <Editor onChange={onChangeEditor} initialValue={data?.content} />
+              <Editor
+                onChange={onChangeEditor}
+                initialValue={props.data?.content}
+              />
             </Box>
             <Box>
               <FormLabel fontSize={20} htmlFor="slug">
@@ -277,7 +299,7 @@ export function EditBlog({ data }: EditBlogProps) {
           </Flex>
         </form>
       </Box>
-    </>
+    </Box>
   );
 }
 

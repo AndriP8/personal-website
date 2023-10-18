@@ -3,16 +3,16 @@ import Axios, { AxiosRequestConfig } from 'axios';
 type AxiosInstanceArgs = {
   token?: string;
   config?: AxiosRequestConfig<unknown>;
-  customUrl?: string;
+  externalUrl?: string;
 };
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const axios = (params: AxiosInstanceArgs = {}) => {
-  const { token, config, customUrl } = params;
+  const { token, config, externalUrl } = params;
 
   const axiosInstance = Axios.create({
-    baseURL: customUrl ?? BASE_URL,
+    baseURL: externalUrl ?? BASE_URL,
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
     },

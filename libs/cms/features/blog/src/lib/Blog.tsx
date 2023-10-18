@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Divider,
   Flex,
   Heading,
@@ -16,14 +17,16 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
+import { axios, AxiosError } from '@personal-website/shared/data-access';
+import { TokenContext } from '@personal-website/shared/token-context';
 import { Blog } from '@prisma/client';
-import axios, { AxiosError } from 'axios';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
 type BlogProps = {
   data: Blog[];
+  errorMessage: string;
 };
 
 const WrapperBlogContent = styled.div`
@@ -40,10 +43,11 @@ export function Blog(props: BlogProps) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const { token } = React.useContext(TokenContext);
 
   const handleDelete = () => {
-    axios
-      .delete(`http://localhost:3000/api/blogs/${clickedDeletedData?.id}`, {
+    axios({ token })
+      .delete(`/backoffice/blogs/${clickedDeletedData?.id}`, {
         data: {
           id: clickedDeletedData?.id,
         },
@@ -71,8 +75,12 @@ export function Blog(props: BlogProps) {
       })
       .finally(onClose);
   };
-  return (
-    <>
+  return props.errorMessage ? (
+    <Center marginTop={28}>
+      <Heading>{props.errorMessage}</Heading>
+    </Center>
+  ) : (
+    <Box>
       <Flex
         borderBottom={1}
         borderStyle="solid"
@@ -191,7 +199,7 @@ export function Blog(props: BlogProps) {
           })}
         </SimpleGrid>
       </Box>
-    </>
+    </Box>
   );
 }
 

@@ -35,7 +35,7 @@ const SignIn = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
-      .post<SignInResponse>(`${BASE_URL}users/login`, {
+      .post<SignInResponse>(`${BASE_URL}/users/login`, {
         email,
         password,
       })
