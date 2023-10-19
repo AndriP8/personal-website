@@ -247,3 +247,33 @@ describe('DELETE /api/backoffice/blogs/:blogId', () => {
     expect(result.body.message).toBe('Not authorized');
   });
 });
+
+// For Public route
+describe('GET /api/blogs', () => {
+  beforeAll(async () => {
+    const user = await createTestUser();
+    await createTesBlog(user.id);
+  });
+  afterAll(async () => {
+    await removeTestBlog();
+    await removeTestUser();
+  });
+  it('should can get blog data', async () => {
+    const result = await supertest(app).get('/api/blogs');
+
+    logger.info(result);
+
+    expect(result.status).toBe(200);
+    expect(result.body.data).toHaveLength(result.body.data.length);
+  });
+
+  it('should can get blog data by id', async () => {
+    const testBlog = await getTestBlog();
+    const result = await supertest(app).get(
+      `/api/blogs?blogId=${testBlog?.id}`
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.id).toBe(testBlog?.id);
+  });
+});

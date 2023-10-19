@@ -4,6 +4,7 @@ import {
   createBlogController,
   deleteBlogController,
   getBlogController,
+  getPublicBlogController,
   updateBlogController,
 } from './controller';
 
@@ -29,5 +30,5 @@ blogRouterBackoffice.delete(
 
 export const blogRouterPublic = express.Router() as Router;
 blogRouterPublic.get('/api/blogs', (req, res, next) => {
-  getBlogController(req, res, next);
+  getPublicBlogController(req, res, next);
 });

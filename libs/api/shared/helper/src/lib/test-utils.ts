@@ -15,14 +15,6 @@ export const createTestUser = async () => {
   });
 };
 
-const getTestUser = () => {
-  return prismaClient.user.findUnique({
-    where: {
-      email: 'test@gmail.com',
-    },
-  });
-};
-
 export const removeTestUser = () => {
   return prismaClient.user.delete({
     where: {

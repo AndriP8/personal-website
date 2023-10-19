@@ -5,6 +5,7 @@ import {
   createBlogService,
   deleteBlogService,
   getBlogService,
+  getPublicBlogService,
   updateBlogService,
 } from './service';
 
@@ -29,7 +30,21 @@ const getBlogController = async (
   next: NextFunction
 ) => {
   try {
-    const result = await getBlogService(req);
+    const token = splitBearer(req.headers.authorization ?? '');
+    const result = await getBlogService(req, token);
+    res.status(200).json({ data: result });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getPublicBlogController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await getPublicBlogService(req);
     res.status(200).json({ data: result });
   } catch (e) {
     next(e);
@@ -70,5 +85,6 @@ export {
   createBlogController,
   deleteBlogController,
   getBlogController,
+  getPublicBlogController,
   updateBlogController,
 };

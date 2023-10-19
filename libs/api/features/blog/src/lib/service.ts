@@ -46,7 +46,9 @@ const createBlogService = async (req: Request, token: string) => {
   });
 };
 
-const getBlogService = (req: Request) => {
+const getBlogService = async (req: Request, token: string) => {
+  const payloadToken = await decodeToken(token);
+
   if (req.query.blogId) {
     return prismaClient.blog.findFirst({
       where: {
@@ -57,7 +59,36 @@ const getBlogService = (req: Request) => {
   // TODO: implement pagination
   return prismaClient.blog.findMany({
     orderBy: {
-      title: 'asc',
+      createdAt: 'desc',
+    },
+    where: {
+      authorId: payloadToken.id,
+    },
+    select: {
+      id: true,
+      title: true,
+      thumbnail: true,
+      content: true,
+      timeToRead: true,
+      createdAt: true,
+      updatedAt: true,
+      slug: true,
+    },
+  });
+};
+
+const getPublicBlogService = async (req: Request) => {
+  if (req.query.blogId) {
+    return prismaClient.blog.findFirst({
+      where: {
+        id: req.query.blogId as string,
+      },
+    });
+  }
+  // TODO: implement pagination
+  return prismaClient.blog.findMany({
+    orderBy: {
+      createdAt: 'desc',
     },
     select: {
       id: true,
@@ -133,5 +164,6 @@ export {
   createBlogService,
   deleteBlogService,
   getBlogService,
+  getPublicBlogService,
   updateBlogService,
 };
