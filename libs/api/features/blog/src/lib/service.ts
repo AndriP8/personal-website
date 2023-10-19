@@ -14,7 +14,7 @@ import {
 
 const createBlogService = async (req: Request, token: string) => {
   const data = validate(createBlogValidation, req);
-  const payloadToken = decodeToken(token);
+  const payloadToken = await decodeToken(token);
   const countBlog = await prismaClient.blog.count({
     where: {
       title: data.title,

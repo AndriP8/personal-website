@@ -1,21 +1,25 @@
-import * as jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
 type User = {
   id: string;
   email: string;
 };
 
-export const createJWT = (user: User) => {
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.JWT_SECRET ?? ''
-  );
-  return token;
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+const alg = 'HS256';
+
+export const createJWT = async (user: User) => {
+  const jwt = await new jose.SignJWT({ id: user.id, email: user.email })
+    .setProtectedHeader({ alg, typ: 'JWT' })
+    .setIssuedAt()
+    .sign(secret);
+
+  return jwt;
 };
 
-export const decodeToken = (token: string) => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '');
-  return decoded as User;
+export const decodeToken = async (token: string) => {
+  const decoded = await jose.jwtVerify(token, secret);
+  return decoded.payload as User;
 };
 
 export const splitBearer = (bearer: string) => {

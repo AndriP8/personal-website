@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
+import * as jose from 'jose';
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export const protectRoute = (
   req: Request,
@@ -22,7 +24,7 @@ export const protectRoute = (
   }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET ?? '');
+    const payload = jose.jwtVerify(token, secret);
     req.body.user = payload;
     next();
     return;

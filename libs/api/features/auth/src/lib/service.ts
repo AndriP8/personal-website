@@ -55,7 +55,7 @@ export const loginUserService = async (req: Request, res: Response) => {
   if (!isPasswordValid) {
     throw new ResponseError(400, 'Username or Password is invalid');
   } else {
-    const token = createJWT({ id: user?.id, ...data });
+    const token = await createJWT({ id: user?.id, ...data });
     res.json({ token });
   }
 };
