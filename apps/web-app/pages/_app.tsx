@@ -1,4 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
+import { Layout } from '@personal-website/web-app/components';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
@@ -9,7 +10,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
         <title>Welcome to web-app!</title>
       </Head>
       <ChakraProvider>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </ChakraProvider>
     </>
   );

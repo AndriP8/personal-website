@@ -6,6 +6,9 @@
     "test:affected": "nx affected  --target=test",
     "lint:affected": "nx affected  --target=lint",
     "build:affected": "nx affected  --target=build",
+    "serve:api": "nx serve api",
+    "serve:cms": "nx serve cms",
+    "serve:web-app": "nx serve web-app",
     "prepare": "husky install"
   },
   "private": true,
