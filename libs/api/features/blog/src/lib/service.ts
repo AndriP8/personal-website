@@ -56,7 +56,28 @@ const getBlogService = async (req: Request, token: string) => {
       },
     });
   }
-  // TODO: implement pagination
+
+  if (req.query.size) {
+    return prismaClient.blog.findMany({
+      take: Number(req.query.size),
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        authorId: payloadToken.id,
+      },
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        content: true,
+        timeToRead: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
+      },
+    });
+  }
   return prismaClient.blog.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -85,7 +106,24 @@ const getPublicBlogService = async (req: Request) => {
       },
     });
   }
-  // TODO: implement pagination
+  if (req.query.size) {
+    return prismaClient.blog.findMany({
+      take: Number(req.query.size),
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        content: true,
+        timeToRead: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
+      },
+    });
+  }
   return prismaClient.blog.findMany({
     orderBy: {
       createdAt: 'desc',
