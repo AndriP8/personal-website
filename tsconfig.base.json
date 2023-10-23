@@ -50,6 +50,9 @@
       "@personal-website/web-app/components": [
         "libs/web-app/components/src/index.ts"
       ],
+      "@personal-website/web-app/features/blog": [
+        "libs/web-app/features/blog/src/index.ts"
+      ],
       "@personal-website/web-app/features/home": [
         "libs/web-app/features/home/src/index.ts"
       ]

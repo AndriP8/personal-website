@@ -1,19 +1,12 @@
-import { Box, Card, Heading, HStack, SimpleGrid, Text } from '@chakra-ui/react';
-import { Blog as PrismaBlog } from '@prisma/client';
-import Image from 'next/image';
+import { Box, Heading, HStack, Text } from '@chakra-ui/react';
+import { BlogCard, BlogData } from '@personal-website/web-app/components';
 import Link from 'next/link';
 
-import styles from './Home.module.css';
-
-export type BlogData = Omit<PrismaBlog, 'authorId'>;
-
-export interface HomeProps {
+type HomeProps = {
   blogs: BlogData[];
-}
+};
 
-const cloudinaryUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-export function Home(props: HomeProps) {
+export function Home({ blogs }: HomeProps) {
   return (
     <>
       <Box>
@@ -41,50 +34,7 @@ export function Home(props: HomeProps) {
             See all
           </Link>
         </HStack>
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {props.blogs.map((blog) => (
-            <Link
-              key={blog.id}
-              href={`/blog/${blog.id}`}
-              className={styles['wrapper-blog-link']}
-            >
-              <Card backgroundColor="gray.200" boxShadow="none" padding={2}>
-                <Image
-                  src={`${cloudinaryUrl}${blog.thumbnail}`}
-                  alt=""
-                  sizes="100vw"
-                  style={{
-                    width: '100%',
-                    height: '450px',
-                    objectFit: 'cover',
-                    borderRadius: 6,
-                  }}
-                  width={500}
-                  height={300}
-                  priority
-                />
-                <SimpleGrid spacing={1} marginBlock={3}>
-                  <Text fontSize={18} fontWeight="semibold" color="#9BABB8">
-                    {new Date(blog.createdAt).toLocaleDateString('id', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}{' '}
-                    - {blog.timeToRead} min read
-                  </Text>
-                  <Text
-                    fontSize={24}
-                    fontWeight="semibold"
-                    color="black"
-                    className="title-blog"
-                  >
-                    {blog.title}
-                  </Text>
-                </SimpleGrid>
-              </Card>
-            </Link>
-          ))}
-        </SimpleGrid>
+        <BlogCard blogs={blogs} />
       </Box>
     </>
   );
