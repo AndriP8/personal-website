@@ -24,8 +24,11 @@ import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
+// TODO: Grouping reusable types
+type BlogData = Omit<Blog, 'authorId'>;
+
 type BlogProps = {
-  data: Blog[];
+  data: BlogData[];
   errorMessage: string;
 };
 
@@ -39,7 +42,7 @@ const WrapperBlogContent = styled.div`
 
 export function Blog(props: BlogProps) {
   const [clickedDeletedData, setClickedDeletedData] =
-    React.useState<Blog | null>(null);
+    React.useState<BlogData | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
