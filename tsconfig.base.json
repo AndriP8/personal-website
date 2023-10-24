@@ -53,6 +53,9 @@
       "@personal-website/web-app/features/blog": [
         "libs/web-app/features/blog/src/index.ts"
       ],
+      "@personal-website/web-app/features/blog-detail": [
+        "libs/web-app/features/blog-detail/src/index.ts"
+      ],
       "@personal-website/web-app/features/home": [
         "libs/web-app/features/home/src/index.ts"
       ]

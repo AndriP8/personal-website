@@ -11,7 +11,7 @@ export const Layout = ({ children }: React.PropsWithChildren) => {
       alignItems="normal"
       minHeight="100vh"
       bgColor="gray.200"
-      paddingInline="15vw"
+      paddingInline={{ base: '16px', md: '28px', lg: '15vw' }}
     >
       <Navbar />
       <Flex direction="column" gap={82} marginBlock={82}>
