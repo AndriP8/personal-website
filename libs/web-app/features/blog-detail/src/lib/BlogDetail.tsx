@@ -54,6 +54,8 @@ export function BlogDetail({ blog }: BlogDetailProps) {
             borderRadius: 8,
           }}
           fill
+          sizes="450,(min-width: 48em) 400"
+          priority
         />
       </Box>
       <Box marginTop={8} width="full">

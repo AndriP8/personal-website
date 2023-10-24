@@ -14,7 +14,7 @@ export function Home({ blogs }: HomeProps) {
           <Heading as="h1" fontSize={32} fontWeight="normal" lineHeight={2}>
             Hi, Im Andri Purnomo
           </Heading>
-          <Text>
+          <Text fontSize={18}>
             Someone who is very interested in frontend development since late
             2020. I am currently working as Frontend Engineer, my main tech
             stack is React and Typescript, but I also learned other things like
