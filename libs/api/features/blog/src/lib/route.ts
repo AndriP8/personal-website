@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 
 import {
   createBlogController,
+  createThumbnailBlogController,
   deleteBlogController,
   getBlogController,
   getPublicBlogController,
@@ -9,6 +10,12 @@ import {
 } from './controller';
 
 export const blogRouterBackoffice = express.Router() as Router;
+blogRouterBackoffice.post(
+  '/api/backoffice/blogs/thumbnail',
+  (req, res, next) => {
+    createThumbnailBlogController(req, res, next);
+  }
+);
 blogRouterBackoffice.post('/api/backoffice/blogs', (req, res, next) => {
   createBlogController(req, res, next);
 });

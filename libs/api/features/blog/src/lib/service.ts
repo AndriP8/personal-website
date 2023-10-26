@@ -4,10 +4,11 @@ import {
   ResponseError,
   validate,
 } from '@personal-website/api/shared/helper';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import {
   createBlogValidation,
+  createThumbnailBlog,
   deleteBlogValidation,
   updateBlogValidation,
 } from './validation';
@@ -53,6 +54,16 @@ const getBlogService = async (req: Request, token: string) => {
     return prismaClient.blog.findFirst({
       where: {
         id: req.query.blogId as string,
+      },
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        content: true,
+        timeToRead: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
       },
     });
   }
@@ -154,7 +165,14 @@ const updateBlogService = async (req: Request) => {
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        ...data,
+        thumbnail: {
+          update: {
+            ...data.thumbnail,
+          },
+        },
+      },
       select: {
         id: true,
         title: true,
@@ -171,35 +189,61 @@ const updateBlogService = async (req: Request) => {
   }
 };
 
-const deleteBlogService = async (req: Request) => {
+const deleteBlogService = async (req: Request, res: Response) => {
   const data = validate(deleteBlogValidation, req);
   const countBlog = await prismaClient.blog.count({
     where: {
       id: data.id,
+      thumbnailId: data.thumbnailId,
     },
   });
 
-  if (countBlog === 1) {
-    return prismaClient.blog.delete({
+  if (countBlog === 1 && data.thumbnailId) {
+    await prismaClient.thumbnail.delete({
       where: {
-        id: data.id,
+        id: data.thumbnailId,
       },
       select: {
         id: true,
-        title: true,
-        slug: true,
-        thumbnail: true,
-        content: true,
-        timeToRead: true,
+        resource: true,
+        owner: true,
+        ownerLink: true,
       },
     });
+    return res.status(200).json({ data: 'Ok' });
   } else {
     throw new ResponseError(400, 'Blog is not found');
   }
 };
 
+const createThumbnailBlogService = async (req: Request) => {
+  const data = validate(createThumbnailBlog, req);
+  const countThumbnailBlog = await prismaClient.thumbnail.count({
+    where: {
+      resource: data.resource,
+    },
+  });
+
+  if (countThumbnailBlog === 1) {
+    throw new ResponseError(400, `Thumbnail '${data.resource}'  already exist`);
+  }
+
+  return prismaClient.thumbnail.create({
+    data: {
+      ...data,
+    },
+    select: {
+      id: true,
+      resource: true,
+      owner: true,
+      ownerLink: true,
+    },
+  });
+};
+
 export {
   createBlogService,
+  createThumbnailBlogService,
   deleteBlogService,
   getBlogService,
   getPublicBlogService,

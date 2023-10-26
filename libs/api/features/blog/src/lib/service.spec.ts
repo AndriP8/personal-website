@@ -1,11 +1,12 @@
 import { userRoute } from '@personal-website/api/features/auth';
 import {
   createTesBlog,
+  createTestThumbnailBlog,
   createTestUser,
   getTestBlog,
-  logger,
+  getTestThumbnailBlog,
   loginTestUser,
-  removeTestBlog,
+  removeTestThumbnailAndBlog,
   removeTestUser,
 } from '@personal-website/api/shared/helper';
 import {
@@ -30,24 +31,68 @@ app.use(blogRouterBackoffice);
 
 app.use(errorMiddleware);
 
+describe('POST /api/backoffice/blogs/thumbnail', () => {
+  beforeAll(async () => {
+    await createTestUser();
+  });
+  afterAll(async () => {
+    await removeTestThumbnailAndBlog();
+    await removeTestUser();
+  });
+  it('should can create new blog', async () => {
+    const loginTest = await loginTestUser(app);
+    const result = await supertest(app)
+      .post('/api/backoffice/blogs/thumbnail')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
+      .send({
+        resource: 'resource thumbnail',
+        owner: 'owner thumbnail',
+        ownerLink: 'http://localhost:3000',
+      });
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.resource).toBe('resource thumbnail');
+    expect(result.body.data.owner).toBe('owner thumbnail');
+    expect(result.body.data.ownerLink).toBe('http://localhost:3000');
+  });
+
+  it('should reject if request is invalid', async () => {
+    const loginTest = await loginTestUser(app);
+    const result = await supertest(app)
+      .post('/api/backoffice/blogs/thumbnail')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
+      .send({
+        resource: '',
+        owner: '',
+        ownerLink: '',
+      });
+
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+  });
+});
+
 describe('POST /api/backoffice/blogs', () => {
   beforeAll(async () => {
     await createTestUser();
   });
   afterAll(async () => {
-    await removeTestBlog();
+    await removeTestThumbnailAndBlog();
     await removeTestUser();
   });
   it('should can create new blog', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
+    const thumbnailTest = await createTestThumbnailBlog();
     const result = await supertest(app)
       .post('/api/backoffice/blogs')
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         title: 'test title',
         slug: 'test slug',
-        thumbnail: 'test thumbnail',
+        thumbnailId: thumbnailTest.id,
         content: '<p>test content</p>',
         timeToRead: 4,
       });
@@ -55,21 +100,21 @@ describe('POST /api/backoffice/blogs', () => {
     expect(result.status).toBe(200);
     expect(result.body.data.title).toBe('test title');
     expect(result.body.data.slug).toBe('test slug');
-    expect(result.body.data.thumbnail).toBe('test thumbnail');
+    expect(result.body.data.thumbnail.resource).toBe(thumbnailTest.resource);
     expect(result.body.data.content).toBe('<p>test content</p>');
     expect(result.body.data.timeToRead).toBe(4);
   });
 
   it('should reject if request is invalid', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
     const result = await supertest(app)
       .post('/api/backoffice/blogs')
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         title: '',
         slug: '',
-        thumbnail: '',
+        thumbnailId: '',
         content: '',
       });
 
@@ -84,7 +129,7 @@ describe('POST /api/backoffice/blogs', () => {
       .send({
         title: 'test title',
         slug: 'test slug',
-        thumbnail: 'test thumbnail',
+        thumbnailId: 'test-id-123',
         content: '<p>test content</p>',
         timeToRead: 4,
       });
@@ -100,25 +145,25 @@ describe('GET /api/backoffice/blogs', () => {
     await createTesBlog(user.id);
   });
   afterAll(async () => {
-    await removeTestBlog();
+    await removeTestThumbnailAndBlog();
     await removeTestUser();
   });
   it('should can get blog data', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
     const result = await supertest(app)
       .get('/api/backoffice/blogs')
-      .set('Authorization', `Bearer ${login.body.token}`);
+      .set('Authorization', `Bearer ${loginTest.body.token}`);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toHaveLength(result.body.data.length);
   });
 
   it('should can get blog data by id', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
     const testBlog = await getTestBlog();
     const result = await supertest(app)
       .get(`/api/backoffice/blogs?blogId=${testBlog?.id}`)
-      .set('Authorization', `Bearer ${login.body.token}`);
+      .set('Authorization', `Bearer ${loginTest.body.token}`);
 
     expect(result.status).toBe(200);
     expect(result.body.data.id).toBe(testBlog?.id);
@@ -138,41 +183,41 @@ describe('PUT /api/backoffice/blogs/:blogId', () => {
     await createTesBlog(user.id);
   });
   afterAll(async () => {
-    await removeTestBlog();
+    await removeTestThumbnailAndBlog();
     await removeTestUser();
   });
   it('should can edit existing blog', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
+    const thumbnailTest = await getTestThumbnailBlog();
     const testBlog = await getTestBlog();
     const result = await supertest(app)
       .put('/api/backoffice/blogs/' + testBlog?.id)
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         id: testBlog?.id,
         title: 'test title',
         slug: 'test slug edited',
-        thumbnail: 'test thumbnail',
+        thumbnail: thumbnailTest,
         content: '<p>test content</p>',
         timeToRead: 4,
       });
-
     expect(result.status).toBe(200);
     expect(result.body.data.slug).toBe('test slug edited');
   });
 
   it('should reject edit if request invalid', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
     const testBlog = await getTestBlog();
     const result = await supertest(app)
       .put('/api/backoffice/blogs/' + testBlog?.id)
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         id: '',
         title: '',
         slug: '',
-        thumbnail: '',
+        thumbnail: null,
         content: '',
       });
 
@@ -189,7 +234,7 @@ describe('PUT /api/backoffice/blogs/:blogId', () => {
         id: '',
         title: '',
         slug: '',
-        thumbnail: '',
+        thumbnail: null,
         content: '',
       });
 
@@ -207,26 +252,26 @@ describe('DELETE /api/backoffice/blogs/:blogId', () => {
     await removeTestUser();
   });
   it('should can delete existing blog', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
+    const thumbnailTest = await getTestThumbnailBlog();
     const testBlog = await getTestBlog();
     const result = await supertest(app)
       .delete('/api/backoffice/blogs/' + testBlog?.id)
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         id: testBlog?.id,
+        thumbnailId: thumbnailTest?.id,
       });
-
-    logger.info(result);
     expect(result.status).toBe(200);
   });
 
   it('should reject delete existing blog', async () => {
-    const login = await loginTestUser(app);
+    const loginTest = await loginTestUser(app);
     const result = await supertest(app)
       .delete('/api/backoffice/blogs/' + null)
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${login.body.token}`)
+      .set('Authorization', `Bearer ${loginTest.body.token}`)
       .send({
         id: null,
       });
@@ -255,13 +300,11 @@ describe('GET /api/blogs', () => {
     await createTesBlog(user.id);
   });
   afterAll(async () => {
-    await removeTestBlog();
+    await removeTestThumbnailAndBlog();
     await removeTestUser();
   });
   it('should can get blog data', async () => {
     const result = await supertest(app).get('/api/blogs');
-
-    logger.info(result);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toHaveLength(result.body.data.length);

@@ -33,15 +33,34 @@ export const loginTestUser = (app: Express) => {
     });
 };
 
-export const createTesBlog = (authorId: string) => {
+export const createTestThumbnailBlog = () => {
+  return prismaClient.thumbnail.create({
+    data: {
+      resource: 'resource thumbnail',
+      owner: 'owner thumbnail',
+      ownerLink: 'http://localhost:3000',
+    },
+  });
+};
+
+export const getTestThumbnailBlog = () => {
+  return prismaClient.thumbnail.findFirst({
+    where: {
+      resource: 'resource thumbnail',
+    },
+  });
+};
+
+export const createTesBlog = async (authorId: string) => {
+  const thumbnail = await createTestThumbnailBlog();
   return prismaClient.blog.create({
     data: {
       title: 'test title',
       slug: 'test slug',
-      thumbnail: 'test thumbnail',
+      thumbnailId: thumbnail.id,
       content: '<p>test content</p>',
       timeToRead: 4,
-      authorId,
+      authorId: authorId,
     },
     select: {
       id: true,
@@ -64,10 +83,18 @@ export const getTestBlog = () => {
   });
 };
 
-export const removeTestBlog = () => {
-  return prismaClient.blog.delete({
+export const removeTestThumbnailAndBlog = async () => {
+  const thumbnail = await getTestThumbnailBlog();
+  // NOTE: for delete blog, should delete thumbnail first, and that is automatically delete blog(Cascade)
+  return prismaClient.thumbnail.delete({
     where: {
-      title: 'test title',
+      id: thumbnail?.id,
+    },
+    select: {
+      id: true,
+      resource: true,
+      owner: true,
+      ownerLink: true,
     },
   });
 };

@@ -11,18 +11,27 @@ datasource db {
 }
 
 model Blog {
-  id         String   @id @default(uuid())
-  title      String   @unique @db.VarChar(100)
-  slug       String   @db.VarChar(100)
-  thumbnail  String   @db.VarChar(100)
-  content    String
-  timeToRead Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  author     User?    @relation(fields: [authorId], references: [id])
-  authorId   String
+  id          String    @id @default(uuid())
+  title       String    @unique @db.VarChar(100)
+  slug        String    @db.VarChar(100)
+  thumbnail   Thumbnail @relation(fields: [thumbnailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  thumbnailId String    @unique
+  content     String
+  timeToRead  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  author      User?     @relation(fields: [authorId], references: [id])
+  authorId    String
 
   @@map("blogs")
+}
+
+model Thumbnail {
+  id        String @id @default(uuid())
+  resource  String @db.VarChar(100)
+  owner     String @db.VarChar(100)
+  ownerLink String @db.VarChar(100)
+  Blog      Blog?
 }
 
 model User {

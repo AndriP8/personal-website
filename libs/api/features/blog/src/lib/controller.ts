@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import {
   createBlogService,
+  createThumbnailBlogService,
   deleteBlogService,
   getBlogService,
   getPublicBlogService,
@@ -74,7 +75,20 @@ const deleteBlogController = async (
   try {
     const { user, ...request } = req.body;
     req.body.id = req.params.blogId;
-    const result = await deleteBlogService(request);
+    await deleteBlogService(request, res);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const createThumbnailBlogController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { user, ...request } = req.body;
+    const result = await createThumbnailBlogService(request);
     res.status(200).json({ data: result });
   } catch (e) {
     next(e);
@@ -83,6 +97,7 @@ const deleteBlogController = async (
 
 export {
   createBlogController,
+  createThumbnailBlogController,
   deleteBlogController,
   getBlogController,
   getPublicBlogController,
