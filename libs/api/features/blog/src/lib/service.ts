@@ -115,6 +115,16 @@ const getPublicBlogService = async (req: Request) => {
       where: {
         id: req.query.blogId as string,
       },
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        content: true,
+        timeToRead: true,
+        createdAt: true,
+        updatedAt: true,
+        slug: true,
+      },
     });
   }
   if (req.query.size) {
