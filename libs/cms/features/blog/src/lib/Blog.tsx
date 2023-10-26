@@ -19,13 +19,10 @@ import {
 } from '@chakra-ui/react';
 import { axios, AxiosError } from '@personal-website/shared/data-access';
 import { TokenContext } from '@personal-website/shared/token-context';
-import { Blog } from '@prisma/client';
+import { BlogData } from '@personal-website/shared/types';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
-
-// TODO: Grouping reusable types
-type BlogData = Omit<Blog, 'authorId'>;
 
 type BlogProps = {
   data: BlogData[];
@@ -53,6 +50,7 @@ export function Blog(props: BlogProps) {
       .delete(`/backoffice/blogs/${clickedDeletedData?.id}`, {
         data: {
           id: clickedDeletedData?.id,
+          thumbnailId: clickedDeletedData?.thumbnail.id,
         },
       })
       .then(() =>
@@ -78,6 +76,7 @@ export function Blog(props: BlogProps) {
       })
       .finally(onClose);
   };
+
   return props.errorMessage ? (
     <Center marginTop={28}>
       <Heading>{props.errorMessage}</Heading>

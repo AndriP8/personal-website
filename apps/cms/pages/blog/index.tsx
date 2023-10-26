@@ -2,11 +2,11 @@ import { Layout } from '@personal-website/cms/component';
 import { Blog } from '@personal-website/cms/features/blog';
 import { axios, AxiosError } from '@personal-website/shared/data-access';
 import { TokenContext } from '@personal-website/shared/token-context';
-import { Blog as BlogType } from '@prisma/client';
+import { BlogData } from '@personal-website/shared/types';
 import React from 'react';
 
 const BlogPage = () => {
-  const [blogData, setBlogData] = React.useState<BlogType[] | []>([]);
+  const [blogData, setBlogData] = React.useState<BlogData[] | []>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const { token } = React.useContext(TokenContext);

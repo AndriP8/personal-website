@@ -17,14 +17,14 @@ import { $generateHtmlFromNodes } from '@lexical/html';
 import { Editor } from '@personal-website/cms/component';
 import { axios, AxiosError } from '@personal-website/shared/data-access';
 import { TokenContext } from '@personal-website/shared/token-context';
-import { Blog } from '@prisma/client';
+import { BlogData } from '@personal-website/shared/types';
 import { EditorState, LexicalEditor } from 'lexical';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 type EditBlogProps = {
-  data: Blog;
+  data: BlogData;
   errorMessage: string;
 };
 
@@ -34,6 +34,8 @@ export function EditBlog(props: EditBlogProps) {
   const [title, setTitle] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [thumbnail, setThumbnail] = React.useState('');
+  const [ownerThumbnail, setOwnerThumbnail] = React.useState('');
+  const [ownerLinkThumbnail, setOwnerLinkThumbnail] = React.useState('');
   const [content, setContent] = React.useState('');
   const [timeToRead, setTimeToRead] = React.useState(0);
   const [isMaximumFile, setIsMaximumFile] = React.useState(false);
@@ -92,8 +94,10 @@ export function EditBlog(props: EditBlogProps) {
       setTitle(props.data.title);
       setSlug(props.data.slug);
       setThumbnail(
-        `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload${props.data.thumbnail}`
+        `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload${props.data.thumbnail.resource}`
       );
+      setOwnerThumbnail(props.data.thumbnail.owner);
+      setOwnerLinkThumbnail(props.data.thumbnail.ownerLink);
       setTimeToRead(props.data.timeToRead);
     }
   }, [props.data]);
@@ -111,14 +115,19 @@ export function EditBlog(props: EditBlogProps) {
     return splittedUrl;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios({ token })
       .put(`/backoffice/blogs/${router.query.id}`, {
         id: router.query.id,
         title,
         slug: slug.toLowerCase().replace(/\s/g, '-'),
-        thumbnail: parseCLoudinaryUrl(),
+        thumbnail: {
+          id: props.data.thumbnail.id,
+          resource: parseCLoudinaryUrl(),
+          owner: ownerThumbnail,
+          ownerLink: ownerLinkThumbnail,
+        },
         content,
         timeToRead,
       })
@@ -195,77 +204,109 @@ export function EditBlog(props: EditBlogProps) {
                 borderColor="gray.300"
               />
             </Box>
-            <Box>
-              <FormLabel fontSize={20} htmlFor="slug">
-                Thumbnail
-              </FormLabel>
-              <Box
-                border={1}
-                borderStyle="solid"
-                borderColor="gray.400"
-                borderRadius={6}
-                maxWidth={350}
-                padding={2}
-                position="relative"
-              >
-                {thumbnail ? (
-                  <Image
-                    src={thumbnail}
-                    width={350}
-                    height={450}
-                    priority
-                    alt="thumbnail-image"
-                    style={{
-                      objectFit: 'cover',
-                      height: 450,
-                      marginBottom: 12,
-                      borderRadius: 6,
-                    }}
-                  />
-                ) : null}
-                <Box height={10} position="relative">
-                  <Input
-                    type="file"
-                    accept=".png, .jpg, .jpeg, .webp"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        if (e.target.files[0].size > maxSizeThumbnail) {
-                          setIsMaximumFile(true);
-                        } else {
-                          setIsMaximumFile(false);
-                          onChangeUpload(e.target.files[0]);
+            <Flex
+              alignItems="start"
+              gap={6}
+              direction={{ base: 'column', lg: 'row' }}
+            >
+              <Box width="full">
+                <FormLabel fontSize={20} htmlFor="slug">
+                  Thumbnail
+                </FormLabel>
+                <Box
+                  border={1}
+                  borderStyle="solid"
+                  borderColor="gray.400"
+                  borderRadius={6}
+                  maxWidth={350}
+                  padding={2}
+                  position="relative"
+                >
+                  {thumbnail ? (
+                    <Image
+                      src={thumbnail}
+                      width={350}
+                      height={450}
+                      priority
+                      alt="thumbnail-image"
+                      style={{
+                        objectFit: 'cover',
+                        height: 450,
+                        marginBottom: 12,
+                        borderRadius: 6,
+                      }}
+                    />
+                  ) : null}
+                  <Box height={10} position="relative">
+                    <Input
+                      type="file"
+                      accept=".png, .jpg, .jpeg, .webp"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          if (e.target.files[0].size > maxSizeThumbnail) {
+                            setIsMaximumFile(true);
+                          } else {
+                            setIsMaximumFile(false);
+                            onChangeUpload(e.target.files[0]);
+                          }
                         }
-                      }
-                    }}
-                    opacity={0}
-                    cursor="pointer"
-                    zIndex={1}
-                  />
-                  <Button
-                    width="full"
-                    border={1}
-                    borderColor="gray.400"
-                    borderStyle="solid"
-                    position="absolute"
-                    top={0}
-                    left={0}
-                  >
-                    Choose image
-                  </Button>
-                </Box>
-                <HStack justifyContent="space-between">
-                  <Box>
-                    <Text color="gray.600" fontSize={14}>
-                      Allowed file extensions: .JPG .JPEG .PNG
-                    </Text>
-                    <Text color="gray.600" fontSize={14}>
-                      Maximum file is 5Mb
-                    </Text>
+                      }}
+                      opacity={0}
+                      cursor="pointer"
+                      zIndex={1}
+                    />
+                    <Button
+                      width="full"
+                      border={1}
+                      borderColor="gray.400"
+                      borderStyle="solid"
+                      position="absolute"
+                      top={0}
+                      left={0}
+                    >
+                      Choose image
+                    </Button>
                   </Box>
-                  {isUploadImageLoading && <Spinner />}
-                </HStack>
+                  <HStack justifyContent="space-between">
+                    <Box>
+                      <Text color="gray.600" fontSize={14}>
+                        Allowed file extensions: .JPG .JPEG .PNG
+                      </Text>
+                      <Text color="gray.600" fontSize={14}>
+                        Maximum file is 5Mb
+                      </Text>
+                    </Box>
+                    {isUploadImageLoading && <Spinner />}
+                  </HStack>
+                </Box>
               </Box>
-            </Box>
+              <Box width="full">
+                <FormLabel fontSize={20} htmlFor="slug">
+                  Owner thumbnail
+                </FormLabel>
+                <Input
+                  id="ownerThumbnail"
+                  name="ownerThumbnail"
+                  type="text"
+                  value={ownerThumbnail}
+                  onChange={(e) => setOwnerThumbnail(e.target.value)}
+                  borderColor="gray.300"
+                />
+              </Box>
+              <Box width="full">
+                <FormLabel fontSize={20} htmlFor="slug">
+                  Owner link thumbnail
+                </FormLabel>
+                <Input
+                  id="ownerLinkThumbnail"
+                  name="ownerLinkThumbnail"
+                  type="text"
+                  value={ownerLinkThumbnail}
+                  onChange={(e) => setOwnerLinkThumbnail(e.target.value)}
+                  borderColor="gray.300"
+                />
+              </Box>
+            </Flex>
             <Box>
               <FormLabel fontSize={20} htmlFor="slug">
                 Content

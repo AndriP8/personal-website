@@ -47,6 +47,7 @@
       "@personal-website/shared/token-context": [
         "libs/shared/token-context/index.ts"
       ],
+      "@personal-website/shared/types": ["libs/shared/types/index.ts"],
       "@personal-website/web-app/components": [
         "libs/web-app/components/src/index.ts"
       ],

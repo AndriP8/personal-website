@@ -2,12 +2,12 @@ import { Layout } from '@personal-website/cms/component';
 import { EditBlog } from '@personal-website/cms/features/edit-blog';
 import { axios, AxiosError } from '@personal-website/shared/data-access';
 import { TokenContext } from '@personal-website/shared/token-context';
-import { Blog } from '@prisma/client';
+import { BlogData } from '@personal-website/shared/types';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 const EditBlogPage = () => {
-  const [blogDetail, setBlogDetail] = React.useState<Blog | null>(null);
+  const [blogDetail, setBlogDetail] = React.useState<BlogData | null>(null);
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const router = useRouter();
