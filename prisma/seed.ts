@@ -32,7 +32,7 @@ async function main() {
 
   const thumbnail = await prisma.thumbnail.create({
     data: {
-      resource: 'thumbnail_jaa04u.webp',
+      resource: '/v1698325048/base-thumbnail.webp',
       owner: 'andri',
       ownerLink: 'https://medium.com/@andri_purnomo/',
     },
