@@ -1,11 +1,9 @@
 import { Card, SimpleGrid, Text } from '@chakra-ui/react';
-import { Blog } from '@prisma/client';
+import { BlogData } from '@personal-website/shared/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import styles from './BlogCard.module.css';
-
-export type BlogData = Omit<Blog, 'authorId'>;
 
 type BlogCardProps = {
   blogs: BlogData[];
@@ -24,7 +22,7 @@ export function BlogCard({ blogs }: BlogCardProps) {
         >
           <Card backgroundColor="gray.200" boxShadow="none" padding={2}>
             <Image
-              src={`${cloudinaryUrl}${blog.thumbnail}`}
+              src={`${cloudinaryUrl}${blog.thumbnail.resource}`}
               alt=""
               sizes="100vw"
               style={{

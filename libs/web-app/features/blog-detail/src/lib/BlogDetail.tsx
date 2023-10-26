@@ -1,6 +1,7 @@
-import { Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
-import { BlogData } from '@personal-website/web-app/components';
+import { Box, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { BlogData } from '@personal-website/shared/types';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type BlogDetailProps = {
   blog: BlogData;
@@ -38,25 +39,38 @@ export function BlogDetail({ blog }: BlogDetailProps) {
           <Text>{blog.timeToRead} min read</Text>
         </HStack>
       </VStack>
-      {/* TODO: adding thumbnail resource */}
-      <Box
-        height={{ base: '400px', md: '450px' }}
-        width={{ base: '100%', md: '90%', lg: '80%' }}
-        position="relative"
-        marginInline="auto"
-      >
-        <Image
-          src={`${cloudinaryUrl}${blog.thumbnail}`}
-          alt=""
-          style={{
-            width: '100%',
-            objectFit: 'cover',
-            borderRadius: 8,
-          }}
-          fill
-          sizes="450,(min-width: 48em) 400"
-          priority
-        />
+      <Box width="full">
+        <Box
+          height={{ base: '400px', md: '450px' }}
+          width={{ base: '100%', md: '90%', lg: '80%' }}
+          position="relative"
+          marginInline="auto"
+        >
+          <Image
+            src={`${cloudinaryUrl}${blog.thumbnail.resource}`}
+            alt=""
+            style={{
+              width: '100%',
+              objectFit: 'cover',
+              borderRadius: 8,
+            }}
+            fill
+            sizes="450,(min-width: 48em) 400"
+            priority
+          />
+        </Box>
+        <Flex justifyContent="center" marginTop={4}>
+          <Text>
+            Photo by{' '}
+            <Link
+              href={blog.thumbnail.ownerLink}
+              style={{ color: '#4A5568' }}
+              target="_blank"
+            >
+              {blog.thumbnail.owner}
+            </Link>
+          </Text>
+        </Flex>
       </Box>
       <Box marginTop={8} width="full">
         <Box dangerouslySetInnerHTML={{ __html: blog.content }} />

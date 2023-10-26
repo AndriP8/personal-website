@@ -1,5 +1,5 @@
 import { axios } from '@personal-website/shared/data-access';
-import { BlogData } from '@personal-website/web-app/components';
+import { BlogData } from '@personal-website/shared/types';
 import { BlogDetail } from '@personal-website/web-app/features/blog-detail';
 import type { GetServerSidePropsContext } from 'next';
 

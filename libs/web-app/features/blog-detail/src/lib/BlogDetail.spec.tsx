@@ -10,7 +10,12 @@ describe('BlogDetail', () => {
           id: '',
           title: '',
           slug: '',
-          thumbnail: '',
+          thumbnail: {
+            id: '',
+            resource: '',
+            owner: '',
+            ownerLink: '',
+          },
           content: '',
           timeToRead: 0,
           createdAt: new Date(),

@@ -1,5 +1,6 @@
 import { Box, Heading } from '@chakra-ui/react';
-import { BlogCard, BlogData } from '@personal-website/web-app/components';
+import { BlogData } from '@personal-website/shared/types';
+import { BlogCard } from '@personal-website/web-app/components';
 
 type BlogProps = {
   blogs: BlogData[];
